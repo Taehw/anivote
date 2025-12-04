@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: '🏆 애니vote - 애니 명장면 투표 순위', // 카톡에 뜨는 제목
   description: '최애 애니메이션 명장면을 뽑는 실시간 투표 서비스', // 카톡에 뜨는 설명
-  // 👇 여기가 중요! OG 이미지 설정
+  // OG 이미지 설정
   openGraph: {
     title: '🏆 애니vote - 지금 투표하세요!',
     description: '최애 애니메이션 명장면을 뽑는 실시간 투표 서비스',

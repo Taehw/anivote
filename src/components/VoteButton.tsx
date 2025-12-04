@@ -22,23 +22,27 @@ export default function VoteButton({ animeId, initialVotes }: Props) {
       // 2. [낙관적 업데이트] DB 기다리지 말고 일단 화면 숫자부터 올림 (반응속도 0.001초처럼 보이게)
       setVotes((prev) => prev + 1);
 
-      // 3. 진짜 DB 업데이트 (현재 투표수 + 1)
-      // 주의: MVP라 간단히 구현함. 동시성 이슈는 나중에 RPC로 해결.
-      const { error } = await supabase
-        .from('animations')
-        .update({ vote_count: votes + 1 })
-        .eq('id', animeId);
+// 💡 2. Supabase 대신, 방금 만든 API Route로 요청을 보냅니다.
+        const response = await fetch('/api/vote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ animation_id: animeId }),
+        });
 
-      if (error) throw error;
+        if (response.status === 403) {
+            // 💡 3. 이미 투표한 경우의 에러 처리
+            alert('🚫 이미 이 명장면에 투표하셨어요! 다른 짤에 투표해 주세요.');
+            setVotes((prev) => prev - 1); // 숫자 원상복구
+            throw new Error('Duplicate vote detected.');
+        }
 
-      // 4. (선택) 로그 테이블에도 기록 남기기
-      await supabase.from('vote_logs').insert({
-        animation_id: animeId,
-        voter_identifier: 'mvp-user', // 나중에 IP나 UUID로 교체
-      });
+        if (!response.ok) {
+            throw new Error('Vote failed on the server.');
+        }
 
-      alert('투표 완료! 🔥');
-      
+        alert('투표 완료! 🔥');
     } catch (error) {
       console.error('투표 실패:', error);
       setVotes((prev) => prev - 1); // 에러나면 숫자 원상복구
