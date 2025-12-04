@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'; //강제 동적 렌더링 설정
+
 import { supabase } from '@/lib/supabase';
 import VoteButton from '@/components/VoteButton'; // 👈 새로 만든 컴포넌트 불러오기
 
